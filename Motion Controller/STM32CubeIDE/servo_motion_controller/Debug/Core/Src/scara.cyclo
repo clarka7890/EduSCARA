@@ -1,0 +1,9 @@
+../Core/Src/scara.c:24:6:scara_init	2
+../Core/Src/scara.c:52:6:scara_reinit	1
+../Core/Src/scara.c:68:6:scara_auto_calibrate	1
+../Core/Src/scara.c:76:6:scara_move_j	1
+../Core/Src/scara.c:81:6:scara_move_js	1
+../Core/Src/scara.c:86:6:scara_move_coord	1
+../Core/Src/scara.c:93:18:scara_get_position	1
+../Core/Src/scara.c:116:6:calc_forward_kinematics	1
+../Core/Src/scara.c:139:6:calc_inverse_kinematics	1

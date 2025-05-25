@@ -1,0 +1,13 @@
+Version 4
+SymbolType BLOCK
+RECTANGLE Normal 48 -144 -48 32
+TEXT 2 -91 Center 3 servo
+PIN -32 16 VLEFT 8
+PINATTR PinName SIG
+PINATTR SpiceOrder 1
+PIN 0 16 VLEFT 8
+PINATTR PinName PWR
+PINATTR SpiceOrder 2
+PIN 32 16 VLEFT 8
+PINATTR PinName GND
+PINATTR SpiceOrder 3

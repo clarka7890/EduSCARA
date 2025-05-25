@@ -1,0 +1,10 @@
+../Core/Src/servo_controller.c:24:6:servo_controller_init	24	static
+../Core/Src/servo_controller.c:40:6:move_j	136	static
+../Core/Src/servo_controller.c:85:6:move_js	272	static
+../Core/Src/servo_controller.c:130:6:servo_controller_scara_init	56	static
+../Core/Src/servo_controller.c:159:6:servo_controller_scara_reinit	40	static
+../Core/Src/servo_controller.c:175:6:servo_controller_scara_auto_calibrate_axis	72	static
+../Core/Src/servo_controller.c:342:6:move_j_scara	216	static
+../Core/Src/servo_controller.c:525:6:move_js_scara	392	static
+../Core/Src/servo_controller.c:699:6:calc_double_s_parameters	40	static
+../Core/Src/servo_controller.c:716:7:calc_double_s_value	64	static

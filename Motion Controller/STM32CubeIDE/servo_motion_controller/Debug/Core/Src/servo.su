@@ -1,0 +1,5 @@
+../Core/Src/servo.c:11:6:servo_init	48	static
+../Core/Src/servo.c:60:7:servo_get_pulse_width_us	24	static
+../Core/Src/servo.c:67:6:servo_set_pulse_width_us	24	static
+../Core/Src/servo.c:73:7:servo_get_angle_from_pulse_width	24	static
+../Core/Src/servo.c:100:6:servo_set_angle	24	static
