@@ -1,0 +1,11 @@
+path: ./resistors
+train: images/train
+val: images/valid
+test: images/test
+
+nc: 1
+
+# classes
+names:
+    0: resistor
+    
