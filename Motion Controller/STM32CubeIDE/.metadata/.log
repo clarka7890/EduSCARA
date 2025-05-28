@@ -1,0 +1,78 @@
+!SESSION 2025-05-27 10:42:41.575 -----------------------------------------------
+eclipse.buildId=Version 1.16.1
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_GB
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-05-27 10:42:50.237
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-05-27 10:42:50.250
+!MESSAGE Log4j2 initialized with config file C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-05-27 10:42:53.879
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2025-05-27 10:46:28.874
+!MESSAGE Indexed 'servo_motion_controller' (35 sources, 140 headers) in 6.56 sec: 15,245 declarations; 76,243 references; 1 unresolved inclusions; 92 syntax errors; 240 unresolved names (0.26%)
+!SESSION 2025-05-27 10:48:52.754 -----------------------------------------------
+eclipse.buildId=Version 1.16.1
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_GB
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -data C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-05-27 10:48:58.592
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-05-27 10:48:58.597
+!MESSAGE Log4j2 initialized with config file C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-05-27 10:49:04.182
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2025-05-27 14:59:16.731 -----------------------------------------------
+eclipse.buildId=Version 1.16.1
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_GB
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-05-27 14:59:26.246
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-05-27 14:59:26.263
+!MESSAGE Log4j2 initialized with config file C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-05-27 14:59:36.407
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2025-05-28 14:28:53.742 -----------------------------------------------
+eclipse.buildId=Version 1.16.1
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_GB
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-05-28 14:29:23.271
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-05-28 14:29:23.287
+!MESSAGE Log4j2 initialized with config file C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-05-28 14:29:33.215
+!MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2025-05-28 17:34:44.956 -----------------------------------------------
+eclipse.buildId=Version 1.16.1
+java.version=17.0.11
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_GB
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2025-05-28 17:35:10.768
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2025-05-28 17:35:10.780
+!MESSAGE Log4j2 initialized with config file C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2025-05-28 17:35:25.325
+!MESSAGE Started RMI Server, listening on port 41337

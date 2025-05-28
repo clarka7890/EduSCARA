@@ -1,0 +1,10 @@
+17:23:47 **** Incremental Build of configuration Debug for project servo_motion_controller ****
+make -j6 all 
+arm-none-eabi-size  servo_motion_controller.elf 
+   text	   data	    bss	    dec	    hex	filename
+  47356	    120	   2704	  50180	   c404	servo_motion_controller.elf
+Finished building: default.size.stdout
+ 
+
+17:23:48 Build Finished. 0 errors, 0 warnings. (took 365ms)
+

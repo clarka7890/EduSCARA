@@ -60,8 +60,8 @@ all: main-build
 main-build: servo_motion_controller.elf secondary-outputs
 
 # Tool invocations
-servo_motion_controller.elf servo_motion_controller.map: $(OBJS) $(USER_OBJS) C:\Users\asus\OneDrive\Documents\final\ year\ project\stm32_workspace\servo_motion_controller\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "servo_motion_controller.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\asus\OneDrive\Documents\final year project\stm32_workspace\servo_motion_controller\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="servo_motion_controller.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+servo_motion_controller.elf servo_motion_controller.map: $(OBJS) $(USER_OBJS) C:\Users\asus\Desktop\EduSCARA\Motion\ Controller\STM32CubeIDE\servo_motion_controller\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "servo_motion_controller.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\asus\Desktop\EduSCARA\Motion Controller\STM32CubeIDE\servo_motion_controller\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="servo_motion_controller.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

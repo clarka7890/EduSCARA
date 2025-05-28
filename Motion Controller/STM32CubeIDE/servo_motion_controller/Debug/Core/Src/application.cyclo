@@ -1,2 +1,3 @@
 ../Core/Src/application.c:34:6:start	1
-../Core/Src/application.c:62:6:update	9
+../Core/Src/application.c:62:6:demo_sequence	1
+../Core/Src/application.c:126:6:update	10

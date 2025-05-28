@@ -1,0 +1,369 @@
+/*
+ * application.c
+ *
+ *  Created on: Feb 2, 2025
+ *      Author: asus
+ */
+
+#include "application.h"
+#include "main.h"
+
+#include "potentiometers.h"
+
+#define API
+#ifdef API
+
+#include "usart.h"
+#include <string.h>
+
+UART_HandleTypeDef *uart_channel;
+
+typedef struct {		// 48 bytes
+	int32_t command_id;	// 4 bytes
+	int32_t values[11];	// 44 bytes
+} command_t;
+
+command_t command;
+
+servo_t axis_0;
+servo_t axis_1;
+servo_t axis_2;
+servo_t axis_3;
+scara_t scara_0;
+
+void start(void)
+{
+	//#define DEBUGGING
+	#ifdef DEBUGGING
+		uart_channel = &huart3;
+	#else
+		uart_channel = &huart2;
+	#endif
+
+	// default values for scara robot ac3100
+	float link_1 = 0.125;
+	float link_2 = 0.1;
+	float z_min = 0.095;
+	float z_max = 0.15;
+	float settling_time = 1.0;
+	float P_0 = 1.3;
+	float I_0 = 0.01;
+	float D_0 = 0.001;
+	float P_1 = 1.3;
+	float I_1 = 0.01;
+	float D_1 = 0.001;
+
+	// initialise scara with default values
+	scara_init(&scara_0, &axis_0, &axis_1, &axis_2, &axis_3, link_1, link_2, z_min, z_max,
+			   settling_time,
+			   P_0, I_0, D_0, P_1, I_1, D_1);
+}
+
+void demo_sequence()
+{
+	float link_1 = 0.125;
+	float link_2 = 0.1;
+	float z_min = 0.095;
+	float z_max = 0.15;
+	float settling_time = 0.5;
+	float P_0 = 1.3;
+	float I_0 = 0.01;
+	float D_0 = 0.001;
+	float P_1 = 1.3;
+	float I_1 = 0.01;
+	float D_1 = 0.001;
+
+	scara_reinit(&scara_0,
+				 link_1, link_2, z_min, z_max,
+				 settling_time,
+				 P_0, I_0, D_0, P_1, I_1, D_1);
+
+	scara_auto_calibrate(&scara_0);
+
+	z_mid = (z_min + z_max) / 2.0;
+	float t = 0.5;
+	float t2 = 1.0;
+
+	// move
+	scara_move_coord(&scara_0, 0.0, 0.15, 0.0, z_max, t);
+	// down
+	scara_move_coord(&scara_0, 0.0, 0.15, 0.0, z_min, t);
+	// up
+	scara_move_coord(&scara_0, 0.0, 0.15, 0.0, z_max, t);
+	// move
+	scara_move_coord(&scara_0, 0.1, 0.1, 0.0, z_max, t);
+	// down
+	scara_move_coord(&scara_0, 0.1, 0.1, -180, z_min, t);
+	// up
+	scara_move_coord(&scara_0, 0.1, 0.1, 0.0, z_max, t);
+	// zig-zag
+	scara_move_coord(&scara_0, 0.175, 0.08, 0.0, z_min, t);
+	scara_move_coord(&scara_0, 0.175, 0.06, 0.0, z_max, t);
+	scara_move_coord(&scara_0, 0.175, 0.04, 0.0, z_min, t);
+	scara_move_coord(&scara_0, 0.175, 0.02, 180.0, z_max, t);
+	scara_move_coord(&scara_0, 0.175, 0.0, 0.0, z_min, t);
+	scara_move_coord(&scara_0, 0.175, -0.02, 180.0, z_max, t);
+	scara_move_coord(&scara_0, 0.175, -0.04, 0.0, z_min, t);
+	// move
+	scara_move_coord(&scara_0, 0.0, 0.125, 0.0, z_max, t2);
+	// square
+	scara_move_coord(&scara_0, -0.05, 0.2, 90.0, z_min, t);
+	scara_move_coord(&scara_0, -0.05, 0.1, 0.0, z_min, t);
+	scara_move_coord(&scara_0, 0.05, 0.1, -90.0, z_min, t);
+	scara_move_coord(&scara_0, 0.05, 0.2, -180.0, z_min, t);
+	// reverse square
+	scara_move_coord(&scara_0, -0.05, 0.2, -90.0, z_mid, t);
+	scara_move_coord(&scara_0, -0.05, 0.1, 0.0, z_mid, t);
+	scara_move_coord(&scara_0, 0.05, 0.1, 90.0, z_mid, t);
+	scara_move_coord(&scara_0, 0.05, 0.2, 180.0, z_mid, t);
+	// move
+	scara_move_coord(&scara_0, 0.0, 0.15, 0.0, z_max, t2);
+
+}
+
+void update(void)
+{
+	// DEMO SEQUENCE - SHORT PB7 TO GND TO ACTIVATE
+	if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == GPIO_PIN_RESET) {
+		demo_sequence();
+	}
+
+	int32_t success_flag = 1; // success flag
+
+	uint8_t rxdata[48];  // 48 bytes total
+
+	if (HAL_UART_Receive(uart_channel, rxdata, 48, HAL_MAX_DELAY) == HAL_OK)
+	{
+		memcpy(&command, &rxdata, sizeof(command_t));
+
+		switch (command.command_id)
+		{
+		case 1:			// SCARA_INITIALISE
+			// |0001   |aaaa  |bbbb  |cccc |dddd |eeee         |ffff|gggg|hhhh|iiii|jjjj|kkkk|
+			// |command|link_1|link_2|z_min|z_max|settling_time|P_0 |I_0 |D_0 |P_1 |I_1 |D_1 |
+
+			float link_1; memcpy(&link_1, &command.values[0], sizeof(float));
+			float link_2; memcpy(&link_2, &command.values[1], sizeof(float));
+			float z_min; memcpy(&z_min, &command.values[2], sizeof(float));
+			float z_max; memcpy(&z_max, &command.values[3], sizeof(float));
+			float settling_time; memcpy(&settling_time, &command.values[4], sizeof(float));
+			float P_0; memcpy(&P_0, &command.values[5], sizeof(float));
+			float I_0; memcpy(&I_0, &command.values[6], sizeof(float));
+			float D_0; memcpy(&D_0, &command.values[7], sizeof(float));
+			float P_1; memcpy(&P_1, &command.values[8], sizeof(float));
+			float I_1; memcpy(&I_1, &command.values[9], sizeof(float));
+			float D_1; memcpy(&D_1, &command.values[10], sizeof(float));
+
+			scara_reinit(&scara_0,
+					     link_1, link_2, z_min, z_max,
+					     settling_time,
+					     P_0, I_0, D_0, P_1, I_1, D_1);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&success_flag, sizeof(int32_t), HAL_MAX_DELAY);
+
+			break;
+
+		case 2:			// SCARA_AUTO_CALIBRATE
+			// |0002   |xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+			// |command|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			scara_auto_calibrate(&scara_0);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&success_flag, sizeof(int32_t), HAL_MAX_DELAY);
+
+			break;
+
+		case 3:			// SCARA_MOVE_JOINT
+			// |0003   |aaaa|bbbb |cccc|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+			// |command|axis|angle|time|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			int32_t axis; memcpy(&axis, &command.values[0], sizeof(int32_t));
+			float angle; memcpy(&angle, &command.values[1], sizeof(float));
+			float time_3; memcpy(&time_3, &command.values[2], sizeof(float));
+
+			scara_move_j(&scara_0, axis, angle, time_3);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&success_flag, sizeof(int32_t), HAL_MAX_DELAY);
+
+			break;
+
+		case 4:			// SCARA_MOVE_JOINTS
+			// |0004   |aaaa   |bbbb   |cccc   |dddd   |eeee|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+        	// |command|angle_0|angle_1|angle_2|angle_3|time|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			float angle_0; memcpy(&angle_0, &command.values[0], sizeof(float));
+			float angle_1; memcpy(&angle_1, &command.values[1], sizeof(float));
+			float angle_2; memcpy(&angle_2, &command.values[2], sizeof(float));
+			float angle_3; memcpy(&angle_3, &command.values[3], sizeof(float));
+			float time_4; memcpy(&time_4, &command.values[4], sizeof(float));
+
+			scara_move_js(&scara_0, angle_0, angle_1, angle_2, angle_3, time_4);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&success_flag, sizeof(int32_t), HAL_MAX_DELAY);
+
+			break;
+
+		case 5:			// SCARA_MOVE_COORD
+			// |0005   |aaaa|bbbb|cccc   |dddd|eeee|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+			// |command|x   |y   |z_angle|z   |time|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			float x; memcpy(&x, &command.values[0], sizeof(float));
+			float y; memcpy(&y, &command.values[1], sizeof(float));
+			float z_angle; memcpy(&z_angle, &command.values[2], sizeof(float));
+			float z; memcpy(&z, &command.values[3], sizeof(float));
+			float time_5; memcpy(&time_5, &command.values[4], sizeof(float));
+
+			scara_move_coord(&scara_0, x, y, z_angle, z, time_5);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&success_flag, sizeof(int32_t), HAL_MAX_DELAY);
+
+			break;
+
+		case 6:			// SCARA_READ_ANGLE
+			// PROTOCOL [48 bytes]:
+
+			// |0006   |aaaa|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+			// |command|axis|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			// PROTOCOL (RETURN) [48 bytes]:
+
+			// |0006   |aaaa |xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+			// |command|angle|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			int32_t axis_6; memcpy(&axis_6, &command.values[0], sizeof(int32_t));
+			float angle_read = potentiometers_read_angle(axis_6);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&success_flag, sizeof(int32_t), HAL_MAX_DELAY);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&angle_read, sizeof(float), HAL_MAX_DELAY);
+
+			break;
+
+		case 7:		// SCARA_READ_COORD
+			// PROTOCOL [48 bytes]:
+
+			// |0007   |xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+			// |command|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			// PROTOCOL (RETURN) [48 bytes]:
+
+			// |0007   |aaaa|bbbb|cccc   |dddd|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+			// |command|x   |y   |z_angle|z   |xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|xxxx|
+
+			scara_position_t scara_pos;
+			scara_pos = scara_get_position(&scara_0);
+
+			float pos[4];
+			pos[0] = scara_pos.x;
+			pos[1] = scara_pos.y;
+			pos[2] = scara_pos.angle_z;
+			pos[3] = scara_pos.z;
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)&success_flag, sizeof(int32_t), HAL_MAX_DELAY);
+
+			HAL_UART_Transmit(uart_channel, (uint8_t*)pos, sizeof(pos), HAL_MAX_DELAY);
+
+			break;
+
+		default:
+
+			break;
+
+		}
+	}
+}
+
+#else
+
+#include "potentiometers.h"
+
+servo_t axis_0;
+servo_t axis_1;
+servo_t axis_2;
+servo_t axis_3;
+scara_t scara_0;
+
+float adc_angle[POTS];
+float adc_raw[POTS];
+
+scara_position_t scara_pos;
+float error[2] = {0.0, 0.0};
+
+void start(void)
+{
+	float link_1 = 0.124;
+	float link_2 = 0.097;
+	float z_min = 0.0;
+	float z_max = 100.0;
+	float settling_time = 1.0;
+	float P_0 = 1.3;
+	float I_0 = 0.01;
+	float D_0 = 0.001;
+	float P_1 = 1.3;
+	float I_1 = 0.01;
+	float D_1 = 0.001;
+
+	scara_init(&scara_0, &axis_0, &axis_1, &axis_2, &axis_3, link_1, link_2, z_min, z_max,
+			   settling_time,
+			   P_0, I_0, D_0, P_1, I_1, D_1);
+//	scara_auto_calibrate(&scara_0);
+//	scara_move_js(&scara_0, 0, 0, 0, 0, 1.0);
+}
+
+void update(void)
+{
+//	float t = 1.0;
+//	float t_delay = 500;
+	while(1)
+	{
+
+//		scara_move_coord(&scara_0, 0.0, 0.13, 0.0, 80.0, t);
+//		adc_angle[0] = potentiometers_read_angle(0);
+//		adc_angle[1] = potentiometers_read_angle(1);
+//		scara_pos = scara_get_position(&scara_0);
+//		error[0] = 0.0 - scara_pos.x;
+//		error[1] = 0.13 - scara_pos.y;
+//		HAL_Delay(t_delay);
+//		scara_move_coord(&scara_0, 0.13, 0.08, 0.0, 20.0, t);
+//		adc_angle[0] = potentiometers_read_angle(0);
+//		adc_angle[1] = potentiometers_read_angle(1);
+//		scara_pos = scara_get_position(&scara_0);
+//		error[0] = 0.13 - scara_pos.x;
+//		error[1] = 0.08 - scara_pos.y;
+//		HAL_Delay(t_delay);
+//		scara_move_coord(&scara_0, 0.13, -0.025, 0.0, 50.0, t);
+//		adc_angle[0] = potentiometers_read_angle(0);
+//		adc_angle[1] = potentiometers_read_angle(1);
+//		scara_pos = scara_get_position(&scara_0);
+//		error[0] = 0.13 - scara_pos.x;
+//		error[1] = -0.025 - scara_pos.y;
+//		HAL_Delay(t_delay);
+//	}
+
+//		scara_move_js(&scara_0, 45, 45, 0, 0, t);
+//		adc_angle[0] = potentiometers_read_angle(0);
+//		adc_angle[1] = potentiometers_read_angle(1);
+//		HAL_Delay(t_delay);
+//		scara_move_js(&scara_0, -60, 100, 0, 0, t);
+//		adc_angle[0] = potentiometers_read_angle(0);
+//		adc_angle[1] = potentiometers_read_angle(1);
+//		HAL_Delay(t_delay);
+//		scara_move_js(&scara_0, -50, 90, 0, 0, t);
+//		adc_angle[0] = potentiometers_read_angle(0);
+//		adc_angle[1] = potentiometers_read_angle(1);
+//		HAL_Delay(t_delay);
+//		scara_move_js(&scara_0, 90, 0, 0, 0, t);
+//		adc_angle[0] = potentiometers_read_angle(0);
+//		adc_angle[1] = potentiometers_read_angle(1);
+//		HAL_Delay(t_delay);
+//	}
+
+		adc_angle[0] = potentiometers_read_angle(0);
+		adc_angle[1] = potentiometers_read_angle(1);
+		adc_raw[0] = potentiometers_read_raw_value(0);
+		adc_raw[1] = potentiometers_read_raw_value(1);
+		HAL_Delay(10);
+	}
+}
+
+#endif
